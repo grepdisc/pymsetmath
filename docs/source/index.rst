@@ -18,16 +18,15 @@ This contains the Multiset class with methods to perform math with multisets.
 .. automodule:: pymsetmath.multiset
       :members:
     
-prob_of_missing 
+examples
 ---------------------------
 
 This contains examples using multisets, including functions for solving the
 problem of minimizing both number of search results returned per worker and
 the chance of missing one of the top results.
 
-.. automodule:: pymsetmath.prob_of_missing
+.. automodule:: pymsetmath.examples
       :members:
-
 
 
 Indices and tables

@@ -45,11 +45,11 @@
         Probability of 4 or more of top 5 from one of 2 sets is 3.7500e-01.
         Probability of 5 or more of top 5 from one of 2 sets is 6.2500e-02.
 
-    When returning a query of the top 5 results from 2 workers, at
-    least one worker will return at least 3 results, but it is
+    When returning a query of the top 5 results from 2 workers, at least
+    one worker will return at least 3 of the top 5 results, but it is
     increasingly less likely that one worker will return 4 or even 5
-    results. The former occurs on average in 3 of 8 queries and the
-    latter in one of 16 queries. In the above example,
+    of the top 5 results. The former occurs on average in 3 of 8 queries
+    and the latter in one of 16 queries. In the above example,
     ``P(1, 4) + P(4, 1) + P(5, 0) + P(0, 5) = 0.375``
 
 """
@@ -58,7 +58,7 @@ __docformat__ = 'restructuredtext'
 
 from collections import defaultdict
 
-from pymsetmath import Multiset, is_nonneg_int
+from pymsetmath.multiset import Multiset, is_nonneg_int
 
 def count_ways_to_obtain_largest_subpopulation(n, m):
     """Return dict of number of ways to obtain largest subpopulation.
@@ -131,15 +131,13 @@ def compute_probabilities(n, m, t=()):
           workers, each returning an integer number of results)
       :t: optional threshold to short-circuit computation
           * integer t is the maximum number of results to return per worker
-          * decimal t is the minimum probability to consider (to be added)
-          * t=0 returns all results, and t=1 returns only results for one result per worker
 
     Output
       :stats: dict containing fields:
-              - count is the the number of results returned per worker
-              - n is the total number of highest scoring results
-              - m is the number of workers
-              - p is the cumulative probability that a result is missed
+          * count is the the number of results returned per worker
+          * n is the total number of highest scoring results
+          * m is the number of workers
+          * p is the cumulative probability that a result is missed
 
     """
 
@@ -183,17 +181,50 @@ def print_cumulative_prob(n=1, m=1, digits=4):
 
     print_template = ('Probability of %(count_str)s or more of top %(n)d' +
         ' from one of %(m)d sets is %(p_str)s.')
-    formats = {'count': '%%%dd' % len(str(n)), 'p': '%%0.%se' % str(digits)}
 
+    formats = {'count': '%%%dd' % len(str(n)), 'p': '%%0.%se' % str(digits)}
+    
     for stats in compute_all_probabilities(n, m):
         stats['count_str'] = formats['count'] % stats['count']
         stats['p_str'] = formats['p'] % stats['p']
         print print_template % stats
 
-def main():
+def run_example():
+    """Demonstrate sample outputs.
+
+    ::
+
+        >> run_example()    # ADD > to re-activate doctest (runs in ~20 sec)
+        Short example, involving 108 multisets
+        Printing the probability of missing 1 or more results from the top 20
+        results, given 4 workers, as a function of the number of top results
+        requested per worker.
+        Probability of  5 or more of top 20 from one of 4 sets is 1.0000e+00.
+        Probability of  6 or more of top 20 from one of 4 sets is 9.8933e-01.
+        Probability of  7 or more of top 20 from one of 4 sets is 7.5516e-01.
+        Probability of  8 or more of top 20 from one of 4 sets is 3.9874e-01.
+        Probability of  9 or more of top 20 from one of 4 sets is 1.6346e-01.
+        Probability of 10 or more of top 20 from one of 4 sets is 5.5457e-02.
+        Probability of 11 or more of top 20 from one of 4 sets is 1.5769e-02.
+        Probability of 12 or more of top 20 from one of 4 sets is 3.7416e-03.
+        Probability of 13 or more of top 20 from one of 4 sets is 7.3482e-04.
+        Probability of 14 or more of top 20 from one of 4 sets is 1.1805e-04.
+        Probability of 15 or more of top 20 from one of 4 sets is 1.5252e-05.
+        Probability of 16 or more of top 20 from one of 4 sets is 1.5461e-06.
+        Probability of 17 or more of top 20 from one of 4 sets is 1.1842e-07.
+        Probability of 18 or more of top 20 from one of 4 sets is 6.4429e-09.
+        Probability of 19 or more of top 20 from one of 4 sets is 2.2192e-10.
+        Probability of 20 or more of top 20 from one of 4 sets is 3.6380e-12.
+        computing longer example, involving 6292069 multisets ...
+        Longer example
+        Chance of omitting documents from top 100 when returning 20 results
+        from each of 10 workers is 8.0721981476e-03
+
+    """
+
     mset = Multiset()
     n1, m1 = 20, 4
-    print """\nShort example, involving %d multisets
+    print """Short example, involving %d multisets
 Printing the probability of missing 1 or more results from the top %d
 results, given %d workers, as a function of the number of top results
 requested per worker.""" % (mset.num_uniq_msets(total=n1, length=m1),
@@ -203,12 +234,13 @@ requested per worker.""" % (mset.num_uniq_msets(total=n1, length=m1),
     n2, m2 = 100, 10
     num_docs = 20
     num_ms = mset.num_uniq_msets(total=n2, length=m2)
-    print '\ncomputing longer example, involving %d multisets ...' % num_ms
-    for stats in compute_probabilities(n=n2, m=m2, t=num_docs):
-        if stats['count'] == num_docs:
+    print 'computing longer example, involving %d multisets ...' % num_ms
+    # add one because result is omitted only when set size exceeds request
+    for stats in compute_probabilities(n=n2, m=m2, t=num_docs + 1):
+        if stats['count'] == num_docs + 1:
             print ' '.join(['Longer example\nChance of omitting documents',
-                'from top %d when returning %d documents\nfrom each of',
+                'from top %d when returning %d results\nfrom each of',
                 '%d workers is %0.10e']) % (n2, num_docs, m2, stats['p'])
 
 if __name__ == "__main__":
-    main()
+    run_example()

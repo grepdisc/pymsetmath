@@ -8,6 +8,10 @@ Objective
 
 pymsetmath contains methods for calculations using multisets.
 
+Examples are included for estimating the probability of missing
+one or more of the top N results for any number of results returned
+by each of m workers.
+
 Usage
 ------
 ::
@@ -29,7 +33,7 @@ Directories
     |-- pymsetmath/
     |   |-- __init__.py
     |   |-- multiset.py
-    |   |-- prob_of_missing.py
+    |   |-- examples.py
     |-- tests/
     |   |-- __init__.py
     |   |-- test_pymsetmath.py

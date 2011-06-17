@@ -17,9 +17,8 @@ import math
 import random
 import unittest
 
-#from pymsetmath.pymsetmath import Multiset, is_nonneg_int
-#from pymsetmath.examples import prob_of_missing as mset_prob
-from pymsetmath import is_nonneg_int, Multiset, examples
+from pymsetmath.multiset import is_nonneg_int, Multiset
+from pymsetmath import examples
 
 class TestMultisetMath(unittest.TestCase):
 
@@ -163,7 +162,6 @@ class TestProbabilities(unittest.TestCase):
         """Test ex compute prob top 100 from 10 return 15."""
         for stats in examples.compute_probabilities(100, 10):
             if stats['count'] == 15:
-                print stats
                 result = stats['p']
                 break
         expected = 0.5929
@@ -185,7 +183,7 @@ class TestProbabilities(unittest.TestCase):
         self.assertTrue(result is None)
 
     def test_ex_compute_all_probabilities_for_5_and_2(self):
-        """Test ex compute all prob for 5 and 2."""
+        """Test ex compute all probabilities for 5 and 2."""
         result = list(examples.compute_all_probabilities(5, 2))
         expected = [{'n': 5, 'm': 2, 'count': 3, 'p': Decimal('1')},
                     {'n': 5, 'm': 2, 'count': 4, 'p': Decimal('0.375')},
@@ -195,7 +193,7 @@ class TestProbabilities(unittest.TestCase):
         self.assertEqual(result, expected)
 
     def test_ex_compute_all_probabilities_for_3_real_cases(self):
-        """Test ex compute all prob for 3 real cases."""
+        """Test ex compute all probabilities for 3 real cases."""
         pairs = [({'n': 40, 'm': 4, 'count': 20}, float('2.2897244280e-03')),
                  ({'n': 40, 'm': 8, 'count': 10}, float('1.7789512134e-01')),
                  ({'n': 80, 'm': 4, 'count': 35}, float('7.8544408865e-04'))]
@@ -205,3 +203,10 @@ class TestProbabilities(unittest.TestCase):
                 if stats['count'] == param['count']:
                     break
             self.assertAlmostEqual(stats['p'], expected, 10)
+
+    def test_ex_print_probabilities_with_bad_inputs(self):
+        """Test ex print probabilities with bad inputs."""
+        ex_print = examples.print_cumulative_prob
+        self.assertRaises(ValueError, ex_print, 1, 0, -1)
+        self.assertRaises(ValueError, ex_print, 0, -1, 1)
+        self.assertRaises(ValueError, ex_print, -1, 1, 0)

@@ -134,7 +134,6 @@ class Multiset(object):
         Yields
             :iterable: a non-ascending sequence of non-negative integers
 
-
         Implementation
             Non-ascending tuples are yielded in lexicographical order
             Yields tuples roughly similar to::
@@ -202,7 +201,6 @@ class Multiset(object):
                     break
         raise StopIteration
 
-
     def num_ways(self, total, length, key_len=1):
         """Yield (key, value) where value is the number of ways.
 
@@ -219,7 +217,7 @@ class Multiset(object):
                  that key.
 
         Implementation
-            Yields keys sharing the same, lexicographic, order as uniq_msets().
+            Yields keys sharing the same lexicographic order as uniq_msets().
 
         """
         if key_len == 1:
@@ -264,7 +262,6 @@ class Multiset(object):
         # for (ixn, r) in (nparts):
         #    print 'n=%d %s' % (ixn, r)        # pretty table of values
         return sum(nparts[n])
-
 
     def multiset_number(self, total, length):
         """Compute multiset number.
